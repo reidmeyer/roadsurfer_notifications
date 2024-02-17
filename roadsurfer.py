@@ -8,6 +8,18 @@ def get_json_from_url(url):
     else:
         return None
 
+def notify(message):
+    url = 'https://ntfy.sh/reid-02-17-2024'
+    data = {'message': message}
+
+    response = requests.post(url, data=data)
+
+    if response.status_code == 200:
+        print(f"Message sent successfully: {message}")
+    else:
+        print(f"Error sending message: {response.text}")
+
+
 def get_trips():
     notifications = []
     stations = get_json_from_url('https://booking.roadsurfer.com/api/en/rally/stations/')
@@ -86,9 +98,7 @@ def main():
                     if trip not in trips_notified:
                         if is_time_between(time(8,00), time(23,30)):
                             print(f"notify: {trip}")
-                            payload = {"roadsurfer": trip}
-                            json_payload = json.dumps(payload)
-                            requests.post(url, headers=headers, data=json_payload)
+                            notify(f"Roadsurfer: {trip}")
                             trips_notified.append(trip)
 
                 sleeptime.sleep(3600)

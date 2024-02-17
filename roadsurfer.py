@@ -72,11 +72,6 @@ def main():
             return check_time >= begin_time or check_time <= end_time
 
 
-    webhook_key = os.getenv("IFTTT_WEBHOOK_KEY")
-    url = f"https://maker.ifttt.com/trigger/tgtg/json/with/key/{webhook_key}"
-    headers = {"Content-Type": "application/json"}
-
-
     trips_notified = []
     while True:
         try:

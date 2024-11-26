@@ -1,7 +1,8 @@
 import requests
 
 def get_json_from_url(url):
-    response = requests.get(url)
+    headers = {'X-Requested-Alias': 'rally.search'}
+    response = requests.get(url, headers=headers)
     if response.status_code == 200:
         data = response.json()
         return data

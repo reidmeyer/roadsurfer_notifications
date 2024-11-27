@@ -1,12 +1,17 @@
 import requests
 
-def get_json_from_url(url):
-    headers = {'X-Requested-Alias': 'rally.search'}
+
+stationDetailHeaders = {'X-Requested-Alias': 'rally.fetchRoutes'}
+stationsHeaders = {'X-Requested-Alias': 'rally.startStations'}
+
+
+def get_json_from_url(url, headers):
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         data = response.json()
         return data
     else:
+        print(f"Error getting data from {url}: {response.text} with status code {response.status_code} and headers {headers}")
         return None
 
 def notify(message):
@@ -22,7 +27,7 @@ def notify(message):
 
 def get_trips():
     notifications = []
-    stations = get_json_from_url('https://booking.roadsurfer.com/api/en/rally/stations/')
+    stations = get_json_from_url('https://booking.roadsurfer.com/api/en/rally/stations', stationsHeaders)
 
     desired_cities = [
         "Amsterdam",
@@ -35,20 +40,20 @@ def get_trips():
             if station['one_way'] is True:
                 if station['name'] in desired_cities:
                     # notify
-                    station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{station['id']}")
+                    station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{station['id']}", stationDetailHeaders)
                     if station_detail:
                         return_ids = station_detail['returns']
                         for id in return_ids:
-                            station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{str(id)}")
+                            station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{str(id)}", stationDetailHeaders)
                             if station_detail:
                                 notifications.append(f"There is a trip from {station['name']} to {station_detail['name']}")
 
 
-                station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{station['id']}")
+                station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{station['id']}", stationDetailHeaders)
                 if station_detail:
                     return_ids = station_detail['returns']
                     for id in return_ids:
-                        station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{str(id)}")
+                        station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{str(id)}", stationDetailHeaders)
                         if station_detail:
                             if station_detail['name'] in desired_cities:
                                 notifications.append(f"There is a trip from {station['name']} to {station_detail['name']}")
@@ -56,13 +61,9 @@ def get_trips():
 
 
 def main():
-
-    import os
     import time as sleeptime
     from datetime import datetime, time
-    import requests
-    import json
-
+    
     def is_time_between(begin_time, end_time, check_time=None):
         # If check time is not given, default to current UTC time
         check_time = check_time or datetime.utcnow().time()

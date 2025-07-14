@@ -2,7 +2,10 @@ import requests
 
 
 stationDetailHeaders = {'X-Requested-Alias': 'rally.fetchRoutes'}
-stationsHeaders = {'X-Requested-Alias': 'rally.startStations'}
+stationsHeaders = {
+    'X-Requested-Alias': 'rally.startStations',
+    'User-Agent': 'Mozilla/5.0 (compatible; WebRequests/1.0)'
+}
 
 
 def get_json_from_url(url, headers):
@@ -28,6 +31,7 @@ def notify(message):
 def get_trips():
     notifications = []
     stations = get_json_from_url('https://booking.roadsurfer.com/api/en/rally/stations', stationsHeaders)
+    import ipdb; ipdb.set_trace()
 
     desired_cities = [
         "Amsterdam",
@@ -63,7 +67,7 @@ def get_trips():
 def main():
     import time as sleeptime
     from datetime import datetime, time
-    
+
     def is_time_between(begin_time, end_time, check_time=None):
         # If check time is not given, default to current UTC time
         check_time = check_time or datetime.utcnow().time()

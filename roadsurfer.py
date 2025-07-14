@@ -31,8 +31,9 @@ def notify(message):
 def get_trips():
     notifications = []
     stations = get_json_from_url('https://booking.roadsurfer.com/api/en/rally/stations', stationsHeaders)
-    import ipdb; ipdb.set_trace()
 
+    # Add flag to show all trips, not just desired cities
+    show_all_trips = True
     desired_cities = [
         "Amsterdam",
         "Rotterdam",
@@ -42,7 +43,7 @@ def get_trips():
     if stations:
         for station in stations:
             if station['one_way'] is True:
-                if station['name'] in desired_cities:
+                if show_all_trips or station['name'] in desired_cities:
                     # notify
                     station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{station['id']}", stationDetailHeaders)
                     if station_detail:
@@ -59,7 +60,7 @@ def get_trips():
                     for id in return_ids:
                         station_detail = get_json_from_url(f"https://booking.roadsurfer.com/api/en/rally/stations/{str(id)}", stationDetailHeaders)
                         if station_detail:
-                            if station_detail['name'] in desired_cities:
+                            if show_all_trips or station_detail['name'] in desired_cities:
                                 notifications.append(f"There is a trip from {station['name']} to {station_detail['name']}")
     return notifications
 
